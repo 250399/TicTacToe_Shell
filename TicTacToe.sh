@@ -45,6 +45,14 @@ firstPlay () {
 	echo "You are "$player
 }
 
+printBoard () {
+	for tempIndex in {0..8}
+	do
+		[ $tempIndex -eq 2 -o $tempIndex -eq 5 ] && echo ${arr[$tempIndex]} || echo -n ${arr[$tempIndex]}
+	done
+	echo
+}
+
 
 reset
-
+printBoard
