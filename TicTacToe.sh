@@ -158,7 +158,7 @@ play () {
 		remMoves=$((remMoves-1))
 		printBoard
 	else
-	 	echo "Please enter any another locaation"
+	 	echo "Please enter any another location"
 		printBoard
 		play
 	fi
