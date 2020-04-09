@@ -14,7 +14,7 @@ firstPlay () {
 		read -p"Please choose X or O" player
 		player=${player^^}
 		if [ "$player" = "X" ]
-		then
+		then  
 			comp=O
 			flag=player 
 		elif [ "$player" = "O" ]
@@ -166,6 +166,7 @@ play () {
 	elif [ $difficulty -eq 2 -a "$flag" = "comp" ]
 	then
 		winOrBlock $comp
+		winOrBlock $player
 	else
 		randomPlay
 	fi
