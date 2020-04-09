@@ -95,7 +95,7 @@ randomPlay () {
 
 }
 
-winOrBlock () {
+checkTwo () {
 	if [ "$flag" = "player" ]
 	then
 		return 
@@ -125,6 +125,26 @@ winOrBlock () {
 		remMoves=$((remMoves-1))
 	fi
 
+}
+
+checkCorner () {
+	index=0
+	[ "$flag" = "player" ] && return || :
+	[ "${arr[0]}" = "-" ] && corner[$((index++))]=0 || :
+	[ "${arr[2]}" = "-" ] && corner[$((index++))]=2 || :
+	[ "${arr[6]}" = "-" ] && corner[$((index++))]=6 || :
+	[ "${arr[8]}" = "-" ] && corner[$((index++))]=8 || :
+	length=${#corner[@]}
+	if [ $length -eq 0 ]
+	then
+		return 0
+	else
+		arr[${corner[$((RANDOM%length))]}]=$comp
+		remMoves=$((remMoves-1))
+		flag=player
+		printBoard
+	fi
+	return 1
 }
 
 winOrBlock () {
@@ -167,6 +187,7 @@ play () {
 	then
 		winOrBlock $comp
 		winOrBlock $player
+		[ "$flag" = "comp" ] && checkCorner || :
 	else
 		randomPlay
 	fi
