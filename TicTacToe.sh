@@ -166,6 +166,7 @@ play () {
 	elif [ $difficulty -eq 2 -a "$flag" = "comp" ]
 	then
 		winOrBlock $comp
+		winOrBlock $player
 	else
 		randomPlay
 	fi
