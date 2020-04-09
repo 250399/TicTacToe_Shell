@@ -1,4 +1,4 @@
-X#!/bin/bash
+#!/bin/bash
 
 
 reset () {
