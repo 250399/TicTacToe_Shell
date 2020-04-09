@@ -197,6 +197,7 @@ play () {
 		winOrBlock $player
 		[ "$flag" = "comp" ] && checkCorner || :
 		[ $? -eq 0 ] && takeCenter || :
+		[ "$flag" = "comp" ] && randomPlay || :
 	else
 		randomPlay
 	fi
@@ -225,7 +226,8 @@ do
 			echo $winner won
 			break
 		fi
-	elif [ $remMoves -eq 0 ]
+	fi
+	if [ $remMoves -eq 0 ]
 	then
 		echo Tie
 		break
