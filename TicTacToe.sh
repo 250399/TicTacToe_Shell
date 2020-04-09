@@ -130,21 +130,29 @@ checkTwo () {
 checkCorner () {
 	index=0
 	[ "$flag" = "player" ] && return || :
-	[ "${arr[0]}" = "-" ] && corner[$((index++))]=0 || :
-	[ "${arr[2]}" = "-" ] && corner[$((index++))]=2 || :
-	[ "${arr[6]}" = "-" ] && corner[$((index++))]=6 || :
-	[ "${arr[8]}" = "-" ] && corner[$((index++))]=8 || :
+	[ "${board[0]}" = "-" ] && corner[$((index++))]=0 || :
+	[ "${board[2]}" = "-" ] && corner[$((index++))]=2 || :
+	[ "${board[6]}" = "-" ] && corner[$((index++))]=6 || :
+	[ "${board[8]}" = "-" ] && corner[$((index++))]=8 || :
 	length=${#corner[@]}
 	if [ $length -eq 0 ]
 	then
 		return 0
 	else
-		arr[${corner[$((RANDOM%length))]}]=$comp
+		board[${corner[$((RANDOM%length))]}]=$comp
 		remMoves=$((remMoves-1))
 		flag=player
 		printBoard
 	fi
 	return 1
+}
+
+takeCenter () {
+	[ "$flag" = "player" ] && return || :
+	[ "${board[4]}" = "-" ] && board[5]=$comp || return
+	remMoves=$((remMoves-1))
+	flag=player
+	printBoard
 }
 
 winOrBlock () {
@@ -188,6 +196,7 @@ play () {
 		winOrBlock $comp
 		winOrBlock $player
 		[ "$flag" = "comp" ] && checkCorner || :
+		[ $? -eq 0 ] && takeCenter || :
 	else
 		randomPlay
 	fi
