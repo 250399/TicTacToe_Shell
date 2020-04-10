@@ -48,39 +48,6 @@ checkWinner () {
 	fi
 }
 
-checkTwo () {
-	if [ "$flag" = "player" ]
-	then
-		return 
-	fi
-	index1=$1
-	index2=$2
-	index3=$3
-	checkCompWin=$4
-	if [ "${board[$index1]}" = "${board[$index2]}" -a "${board[$index1]}" != "-" -a "${board[$index3]}" = "-" -a "${board[$index1]}" = "$checkCompWin" ] 
-	then
-		board[$index3]=$comp
-	 	flag=player
-		remMoves=$((remMoves-1))
-		printBoard
-	fi
-	if [ "${board[$index1]}" = "${board[$index3]}" -a "${board[$index1]}" != "-" -a "${board[$index2]}" = "-"  -a "${board[$index1]}" = "$checkCompWin" ]
-	then
-	 	board[$index2]=$comp
-		remMoves=$((remMoves-1))
-	 	flag=player
-		printBoard
-	fi
-	if [ "${board[$index3]}" = "${board[$index2]}" -a "${board[$index3]}" != "-" -a "${board[$index1]}" = "-"  -a "${board[$index2]}" = "$checkCompWin" ]
-	then
-		board[$index1]=$comp
-		flag=player
-		printBoard
-		remMoves=$((remMoves-1))
-	fi
-
-}
-
 randomPlay () {
 	pos=$((RANDOM%9))
 	if [ "${board[$pos]}" = "-" ] 
@@ -103,38 +70,31 @@ checkTwo () {
 	index1=$1
 	index2=$2
 	index3=$3
-	if [ "${board[$index1]}" = "${board[$index2]}" -a "${board[$index1]}" != "-" -a "${board[$index3]}" = "-" ] 
+	if [ "${board[$index1]}" = "${board[$index2]}" -a "${board[$index1]}" = "$letter" -a "${board[$index3]}" = "-" ] 
 	then
 		board[$index3]=$comp
 	 	flag=player
 		remMoves=$((remMoves-1))
 		printBoard
 	fi
-	if [ "${board[$index1]}" = "${board[$index3]}" -a "${board[$index1]}" != "-" -a "${board[$index2]}" = "-" ]
-	then
-	 	board[$index2]=$comp
-		remMoves=$((remMoves-1))
-	 	flag=player
-		printBoard
-	fi
-	if [ "${board[$index3]}" = "${board[$index2]}" -a "${board[$index3]}" != "-" -a "${board[$index1]}" = "-" ]
-	then
-		board[$index1]=$comp
-		flag=player
-		printBoard
-		remMoves=$((remMoves-1))
-	fi
-
 }
 
 checkCorner () {
 	index=0
-	[ "$flag" = "player" ] && return || :
-	[ "${board[0]}" = "-" ] && corner[$((index++))]=0 || :
-	[ "${board[2]}" = "-" ] && corner[$((index++))]=2 || :
-	[ "${board[6]}" = "-" ] && corner[$((index++))]=6 || :
-	[ "${board[8]}" = "-" ] && corner[$((index++))]=8 || :
+	declare -A corner
+	if [ "$flag" = "player" ]  
+	then 
+		return 
+	fi
+	for cornerIndex in 0 2 6 8
+	do
+		if [ "${board[$cornerIndex]}" = "-" ] 
+		then
+			corner[$((index++))]=$cornerIndex 
+		fi
+	done
 	length=${#corner[@]}
+	echo ${corner[@]}
 	if [ $length -eq 0 ]
 	then
 		return 0
@@ -158,14 +118,29 @@ takeCenter () {
 winOrBlock () {
 	letter=$1
 	checkTwo 0 1 2 $letter
+	checkTwo 1 2 0 $letter
+	checkTwo 0 2 1 $letter
 	checkTwo 3 4 5 $letter
+	checkTwo 3 5 4 $letter
+	checkTwo 5 4 3 $letter
 	checkTwo 6 7 8 $letter
+	checkTwo 8 7 6 $letter
+	checkTwo 6 8 7 $letter
 	checkTwo 0 4 8 $letter
+	checkTwo 0 8 4 $letter
+	checkTwo 8 4 0 $letter
 	checkTwo 2 4 6 $letter
+	checkTwo 6 4 2 $letter
+	checkTwo 2 6 4 $letter
 	checkTwo 0 3 6 $letter
+	checkTwo 0 6 3 $letter
+	checkTwo 6 3 0 $letter
 	checkTwo 1 4 7 $letter
+	checkTwo 7 4 1 $letter
+	checkTwo 1 7 4 $letter
 	checkTwo 2 5 8 $letter
-	[ "$flag" = "comp" ] && randomPlay || :
+	checkTwo 5 8 2 $letter
+	checkTwo 2 8 5 $letter
 }
 
 printBoard () {
@@ -195,9 +170,18 @@ play () {
 	then
 		winOrBlock $comp
 		winOrBlock $player
-		[ "$flag" = "comp" ] && checkCorner || :
-		[ $? -eq 0 ] && takeCenter || :
-		[ "$flag" = "comp" ] && randomPlay || :
+		if [ "$flag" = "comp" ]  
+		then
+			checkCorner 
+		fi
+		if [ $? -eq 0 ]
+		then
+			 takeCenter
+		fi
+		if [ "$flag" = "comp" ] 
+		then
+			randomPlay
+		fi
 	else
 		randomPlay
 	fi
